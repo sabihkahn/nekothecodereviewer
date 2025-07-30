@@ -1,0 +1,334 @@
+/* Updated CSS with persistence fix */
+:root {
+  --bg: #121212;
+  --fg: #e0e0e0;
+  --accent: #bb86fc;
+  --accent-dark: #9a67ea;
+  --border: #333;
+  --card-bg: #1e1e1e;
+  --card-hover: #252525;
+  --success: #4caf50;
+  --error: #f44336;
+  --warning: #ff9800;
+  --text-secondary: #aaa;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body, html, #root {
+  height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1rem;
+  gap: 1rem;
+  max-width: 1800px;
+  margin: 0 auto;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.history-toggle {
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.history-toggle:hover {
+  background: var(--accent-dark);
+  transform: translateY(-2px);
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  gap: 1rem;
+  overflow: hidden;
+}
+
+.history-sidebar {
+  width: 300px;
+  background: var(--card-bg);
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow);
+  transition: transform 0.3s ease;
+  overflow: hidden;
+  z-index: 100;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.clear-history {
+  background: transparent;
+  color: var(--error);
+  border: 1px solid var(--error);
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clear-history:hover {
+  background: var(--error);
+  color: white;
+}
+
+.history-list {
+  list-style: none;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.history-item {
+  background: var(--bg);
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+}
+
+.history-item:hover {
+  background: var(--card-hover);
+  transform: translateX(5px);
+}
+
+.history-item.active {
+  border-left: 3px solid var(--accent);
+  background: var(--card-hover);
+}
+
+.history-snippet {
+  font-family: monospace;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.25rem;
+}
+
+.history-timestamp {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.empty-history {
+  text-align: center;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-top: 1rem;
+}
+
+.content-panels {
+  display: flex;
+  flex: 1;
+  gap: 1rem;
+  overflow: hidden;
+}
+
+.editor-container,
+.review-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--card-bg);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.editor-container h2,
+.review-container h2 {
+  margin-bottom: 1rem;
+  color: var(--accent);
+}
+
+.editor-container textarea,
+.review-container pre {
+  flex: 1;
+  background: #1a1a1a;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--fg);
+  padding: 1rem;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  overflow: auto;
+  resize: none;
+}
+
+.review-container pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.editor-container textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(187, 134, 252, 0.2);
+}
+
+.editor-container button {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  align-self: flex-end;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.editor-container button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.editor-container button:not(:disabled):hover {
+  background: var(--accent-dark);
+  transform: translateY(-2px);
+}
+
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Desktop specific styles */
+@media (min-width: 769px) {
+  .history-sidebar {
+    transform: translateX(-100%);
+  }
+
+  .history-sidebar.open {
+    transform: translateX(0);
+  }
+}
+
+/* Mobile specific enhancements */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 0.75rem;
+    gap: 0.75rem;
+  }
+  
+  .app-header {
+    padding: 0.75rem;
+  }
+  
+  .main-content {
+    flex-direction: column;
+    position: relative;
+  }
+  
+  .history-sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 40vh;
+    max-height: 40vh;
+    transform: translateY(-100%);
+    border-radius: 0 0 12px 12px;
+    z-index: 100;
+  }
+  
+  .history-sidebar.open {
+    transform: translateY(0);
+  }
+  
+  .content-panels {
+    flex-direction: column;
+    height: 100%;
+    gap: 1rem;
+  }
+  
+  .editor-container,
+  .review-container {
+    min-height: 45vh;
+    padding: 1.25rem;
+  }
+  
+  .editor-container textarea,
+  .review-container pre {
+    font-size: 1.05rem;
+    padding: 1.25rem;
+  }
+  
+  .history-item {
+    padding: 1rem;
+  }
+  
+  .history-snippet {
+    font-size: 1rem;
+  }
+  
+  .editor-container button {
+    padding: 1rem 1.75rem;
+    font-size: 1.05rem;
+  }
+  
+  .app-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .history-toggle {
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+  }
+}
