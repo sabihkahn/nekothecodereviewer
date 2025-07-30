@@ -8,6 +8,7 @@ function App() {
   const [history, setHistory] = useState([]);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [activeHistory, setActiveHistory] = useState(null);
+  const [showSplash, setShowSplash] = useState(true);
 
   // Initialize state from localStorage
   useEffect(() => {
@@ -20,6 +21,13 @@ function App() {
       setCode(savedHistory[0].code);
       setReview(savedHistory[0].review);
     }
+    
+    // Hide splash screen after animation
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 3000);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   // Save history to localStorage
@@ -77,67 +85,80 @@ function App() {
 
   return (
     <div className="app-container">
-      <header className="app-header">
-        <h1>CodeReview Pro</h1>
-        <button 
-          className="history-toggle"
-          onClick={() => setIsHistoryOpen(!isHistoryOpen)}
-        >
-          {isHistoryOpen ? 'Close History' : 'View History'}
-        </button>
-      </header>
+      {/* Splash Screen */}
+      <div className={`splash-screen ${showSplash ? 'visible' : 'hidden'}`}>
+        <div className="splash-content">
+          <h1>Niko The Code Reviewer</h1>
+          <div className="loading-bar">
+            <div className="loading-progress"></div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Main App Content - Always rendered but behind splash */}
+      <div className="app-content">
+        <header className="app-header">
+          <h1>CodeReview Pro</h1>
+          <button 
+            className="history-toggle"
+            onClick={() => setIsHistoryOpen(!isHistoryOpen)}
+          >
+            {isHistoryOpen ? 'Close History' : 'View History'}
+          </button>
+        </header>
 
-      <div className="main-content">
-        <div className={`history-sidebar ${isHistoryOpen ? 'open' : ''}`}>
-          <div className="history-header">
-            <h2>Review History</h2>
-            {history.length > 0 && (
-              <button className="clear-history" onClick={clearHistory}>
-                Clear All
-              </button>
+        <div className="main-content">
+          <div className={`history-sidebar ${isHistoryOpen ? 'open' : ''}`}>
+            <div className="history-header">
+              <h2>Review History</h2>
+              {history.length > 0 && (
+                <button className="clear-history" onClick={clearHistory}>
+                  Clear All
+                </button>
+              )}
+            </div>
+            
+            {history.length === 0 ? (
+              <p className="empty-history">No review history yet</p>
+            ) : (
+              <ul className="history-list">
+                {history.map(item => (
+                  <li 
+                    key={item.id} 
+                    className={`history-item ${activeHistory === item.id ? 'active' : ''}`}
+                    onClick={() => loadHistoryItem(item)}
+                  >
+                    <div className="history-snippet">
+                      {item.code.substring(0, 50)}{item.code.length > 50 ? '...' : ''}
+                    </div>
+                    <div className="history-timestamp">{item.timestamp}</div>
+                  </li>
+                ))}
+              </ul>
             )}
           </div>
-          
-          {history.length === 0 ? (
-            <p className="empty-history">No review history yet</p>
-          ) : (
-            <ul className="history-list">
-              {history.map(item => (
-                <li 
-                  key={item.id} 
-                  className={`history-item ${activeHistory === item.id ? 'active' : ''}`}
-                  onClick={() => loadHistoryItem(item)}
-                >
-                  <div className="history-snippet">
-                    {item.code.substring(0, 50)}{item.code.length > 50 ? '...' : ''}
-                  </div>
-                  <div className="history-timestamp">{item.timestamp}</div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
 
-        <div className="content-panels">
-          <form className="editor-container" onSubmit={handleSubmit}>
-            <h2>Paste your code</h2>
-            <textarea
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              placeholder="Enter code to review..."
-            />
-            <button type="submit" disabled={loading}>
-              {loading ? (
-                <>
-                  <span className="spinner"></span> Reviewing...
-                </>
-              ) : 'Review Code'}
-            </button>
-          </form>
+          <div className="content-panels">
+            <form className="editor-container" onSubmit={handleSubmit}>
+              <h2>Paste your code</h2>
+              <textarea
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                placeholder="Enter code to review..."
+              />
+              <button type="submit" disabled={loading}>
+                {loading ? (
+                  <>
+                    <span className="spinner"></span> Reviewing...
+                  </>
+                ) : 'Review Code'}
+              </button>
+            </form>
 
-          <div className="review-container">
-            <h2>Review</h2>
-            <pre>{review}</pre>
+            <div className="review-container">
+              <h2>Review</h2>
+              <pre>{review}</pre>
+            </div>
           </div>
         </div>
       </div>
